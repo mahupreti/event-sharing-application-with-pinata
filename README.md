@@ -1,7 +1,7 @@
-# Event Sharing Application
+# The FOMO Factory
 
 ## Description
-This is a web application for sharing events, allowing users to add new events along with images and videos, and view a list of all events. The application uses IPFS pinata for storing images, videos and Leaflet.js for displaying event locations on a map.
+Events are constantly occurring in our local area, yet my friends often overlook them. To address this, I created "**The FOMO Factory**." As the name implies, no one will miss out on what's happening nearby. Users can upload various file types, including images and videos, to this web application, along with the location where the event is happening. User will provide the location using Map feature in the web app and then upload the image or the video of the happening event. Then, the nearby user around 10 miles will get this notification on their phone in the realtime and visit the event without missing them. This project utilizes **Pinata’s** Files API for smooth file storage and retrieval on the **IPFS** network.
 
 Pinata cloud IPFS is used to store all the images and videos uploaded by the user. Users are then able to share the images and videos or the location of the event. The pinata cloud image data are then removed after 7 days period automatically since the posted event won't be reliable. All calls to pinata are made through API using pinata access key and secret key.
 
