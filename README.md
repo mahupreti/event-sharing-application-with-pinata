@@ -40,3 +40,5 @@ Pinata cloud IPFS is used to store all the images uploaded by the user. Users ar
     ```node server.js```
     
 
+### Production Deployment
+For now, I have deployed it in render platform. The public domain is : https://event-sharing-application-with-pinata.onrender.com/ . The website might be slow as it is running in free version but the function of website can be performed easily.
