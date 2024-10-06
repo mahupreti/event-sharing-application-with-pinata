@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Event</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="view-events.html">View Events</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Add New Event</h1>
+        <form id="eventForm" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="Event Title" required>
+            <input type="text" name="description" placeholder="Event Description" required>
+            <input type="file" name="image" accept="image/*" required>
+            <div class="location">
+                <input type="text" id="lat" name="lat" placeholder="Latitude" required readonly>
+                <input type="text" id="lng" name="lng" placeholder="Longitude" required readonly>
+            </div>
+            <br>
+            <button type="submit">Upload Event</button>
+            <br>
+            <div id="feedback" class="error-message"></div>
+        </form>
+
+        <div id="map" style="height: 400px;"></div>
+
+        <div class="loading" id="loading" style="display: none;">
+            <div class="loader"></div>
+            <h2>Adding Event...</h2>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        let marker; 
+
+        $('#eventForm').on('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            $('#loading').show();
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/upload',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function() {
+                    $('#feedback').removeClass('error-message').addClass('success-message').text('Event uploaded successfully!');
+                    setTimeout(() => {
+                        $('#feedback').text(''); 
+                    }, 3000);
+                    $('#eventForm')[0].reset(); 
+                    if (marker) {
+                        map.removeLayer(marker); 
+                        marker = null; 
+                    }
+                },
+                error: function(err) {
+                    $('#feedback').removeClass('success-message').addClass('error-message').text('An error occurred while uploading the event. Please try again.');
+                    console.error(err);
+                },
+                complete: function() {
+                    $('#loading').hide();
+                }
+            });
+        });
+
+        const map = L.map('map').setView([51.505, -0.09], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        map.on('click', function(e) {
+            const lat = e.latlng.lat;
+            const lng = e.latlng.lng;
+            $('#lat').val(lat);
+            $('#lng').val(lng);
+            if (marker) {
+                map.removeLayer(marker); 
+            }
+            marker = L.marker([lat, lng]).addTo(map).bindPopup('Location selected!').openPopup();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Sharing</title>
+    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <header>
+        <h1>Event Sharing App</h1>
+    </header>
+    <nav>
+        <button onclick="window.location.href='add-event.html'">Add Event</button>
+        <button onclick="window.location.href='view-events.html'">View Events</button>
+    </nav>
+
+    <h2>Upcoming Events</h2>
+    <div id="eventsContainer"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+
+        $(document).ready(function() {
+            $.ajax({
+                type: 'GET',
+                url: '/api/events', // Use the variable here
+                success: function(events) {
+                    console.log(`Total events fetched: ${events.length}`);
+                    console.log(events);
+
+                    if (events.length === 0) {
+                        $('#eventsContainer').append('<p>No events found.</p>');
+                    } else {
+                        events.forEach(event => {
+                            console.log(`Processing event: ${event.title}`);
+
+                            const cid = event.ipfsHash; 
+                            const lat = parseFloat(event.lat); 
+                            const lng = parseFloat(event.lng); 
+
+                            $('#eventsContainer').append(`
+                                <div class="event">
+                                    <h2>${event.title}</h2>
+                                    <p>${event.description}</p>
+                                    <div class="map" id="map-${cid}" style="height: 200px;"></div>
+                                    <img src="https://gateway.pinata.cloud/ipfs/${cid}" alt="${event.title}">
+                                    <div class="button-group">
+                                        <button onclick="window.open('https://gateway.pinata.cloud/ipfs/${cid}', '_blank')">View Full Screen</button>
+                                        <button onclick="openMapLocation(${lat}, ${lng})">View Location</button>
+                                    </div>
+                                </div>
+                            `);
+
+                            // Initialize map
+                            const map = L.map(`map-${cid}`).setView([lat, lng], 13);
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                maxZoom: 19,
+                            }).addTo(map);
+                            L.marker([lat, lng]).addTo(map).bindPopup(`Location of ${event.title}`);
+                        });
+                    }
+                },
+                error: function(err) {
+                    console.error('Error loading events:', err);
+                    $('#eventsContainer').append('<p>Error loading events.</p>');
+                }
+            });
+        });
+
+        function openMapLocation(lat, lng) {
+            const mapUrl = `https://www.openstreetmap.org/#map=13/${lat}/${lng}`;
+            window.open(mapUrl, '_blank');
+        }
+    </script>
+</body>
+</html>
