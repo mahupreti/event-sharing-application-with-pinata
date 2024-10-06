@@ -9,7 +9,7 @@
 </head>
 <body>
     <header>
-        <h1>Event Sharing App</h1>
+        <h1>The FOMO Factory</h1>
     </header>
     <nav>
         <button onclick="window.location.href='add-event.html'">Add Event</button>
@@ -26,7 +26,7 @@
         $(document).ready(function() {
             $.ajax({
                 type: 'GET',
-                url: '/api/events', // Use the variable here
+                url: '/api/events', 
                 success: function(events) {
                     console.log(`Total events fetched: ${events.length}`);
                     console.log(events);
